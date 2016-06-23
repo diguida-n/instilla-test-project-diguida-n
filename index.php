@@ -1,32 +1,25 @@
 <?php
-
+error_reporting(E_ALL ^ E_WARNING);
  function findAndCompare($firstLink, $secondLink)
 {
 	// acquisizione html primo link
 	$html1 = file_get_contents($firstLink);
-	$dom1 = new DOMDocument;
-	$dom1->loadHTML($html1);
-	$anchorsLink1=[];
-	$j=0;
-	foreach ($dom1->getElementsByTagName('a') as $node) {
-		if ($node->hasAttribute( 'href' ) ){
-			$anchorsLink1[] = $node->getAttribute( 'href' ); 
-			$j++;
-		}
-	}
+	$anchorsLink1 =[];
+	putHrefInArray($anchorsLink1, $html1);
+
 	// acquisizione html secondo link
 	$html2 = file_get_contents($secondLink);
-	$dom2 = new DOMDocument;
-	$dom2->loadHTML($html2);
-	$anchorsLink2=[];
-	$i = 0;
-	foreach ($dom2->getElementsByTagName('a') as $node) {
-		if ($node->hasAttribute( 'href' ) ){
-			$anchorsLink2[] = $node->getAttribute( 'href' ); 
-			$i++;
-		}
-	}
+	$anchorsLink2 =[];
+	putHrefInArray($anchorsLink2, $html2);
 
+	//acquisizione html prima anchor del link 1
+	$firstAnchorFirstSite = file_get_contents($anchorsLink1[0]);
+	putHrefInArray($anchorsLink1, $firstAnchorFirstSite);
+	
+	//acquisizione html prima anchor del link 2
+	$firstAnchorSecondSite = file_get_contents($anchorsLink2[0]);
+	putHrefInArray($anchorsLink2, $firstAnchorSecondSite);
+	//unione degli array per somiglianza dell'href
 	$length1 = count($anchorsLink1) ;
 	$length2 = count($anchorsLink2) ;
 	
@@ -43,13 +36,7 @@
 		}
 			$mergedAnchors[] = [$anchorsLink1[$i] , $anchorsLink2[$index], number_format($maxSimilarity, 2, '.', '')];
 	}
-		//stampa array
-	// foreach ($mergedAnchors as $anchor) {
- //    		foreach ($anchor as $piece) {
- //    			echo $piece." , ";
- //    		}
- //    		echo "<br>";
-	// } 
+		
 	header('Content-Type: text/csv; charset=utf-8');
 	header('Content-Disposition: attachment; filename=percSimilarityNDG.csv');
 
@@ -66,8 +53,18 @@
 	}
 }
 
-?>
-<?php 
+function putHrefInArray(&$array, $html){
+	$dom = new DOMDocument;
+	$dom->loadHTML($html);
+	foreach ($dom->getElementsByTagName('a') as $node) {
+		if ($node->hasAttribute( 'href' ) ){
+			$array[] = $node->getAttribute( 'href' ); 
+		}
+	}
+
+	
+
+} 
 
 	if( isset( $_POST[ 'firstlink' ] ) && isset( $_POST [ 'secondlink' ] ) ) {
 		findAndCompare($_POST['firstlink'],$_POST['secondlink' ] ) ; 
