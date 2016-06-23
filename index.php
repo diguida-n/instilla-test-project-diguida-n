@@ -41,27 +41,29 @@
 				$index = $j;		
 			}
 		}
-				$mergedAnchors[] = [$anchorsLink1[$i] , $anchorsLink2[$index], number_format($maxSimilarity, 2, '.', '')];
+			$mergedAnchors[] = [$anchorsLink1[$i] , $anchorsLink2[$index], number_format($maxSimilarity, 2, '.', '')];
 	}
 		//stampa array
-	foreach ($mergedAnchors as $anchor) {
-    		foreach ($anchor as $piece) {
-    			echo $piece." , ";
-    		}
-    		echo "<br>";
-	} 
-	
+	// foreach ($mergedAnchors as $anchor) {
+ //    		foreach ($anchor as $piece) {
+ //    			echo $piece." , ";
+ //    		}
+ //    		echo "<br>";
+	// } 
+	header('Content-Type: text/csv; charset=utf-8');
+	header('Content-Disposition: attachment; filename=perc.csv');
 
-	echo "Somiglianza <br>"; 
-	
-   	if ( $length1 > $length2 ) {
-   		similar_text($length1, $length2,$percent); 
-   		echo  $percent . "%";
-   	}
-   	else {
-   		similar_text($length2, $length1,$percent);
-   		echo  $percent . "%";
-   	}
+	// create a file pointer connected to the output stream
+	$output = fopen('php://output', 'w');
+
+	// output the column headings
+	fputcsv($output, array('Link 1', 'Link 2', '%'));
+
+
+	// loop over the rows, outputting them
+	foreach ($mergedAnchors as $row) {
+		fputcsv($output, $row);
+	}
 }
 
 ?>
@@ -69,11 +71,14 @@
 
 	if( isset( $_POST[ 'firstlink' ] ) && isset( $_POST [ 'secondlink' ] ) ) {
 		findAndCompare($_POST['firstlink'],$_POST['secondlink' ] ) ; 
-
+		die();
 	} 
 
 ?>
-
+<html>
+	<head></head>
+	<body>
+	
 <form action="/" method="POST">
   First link:<br>
   <input type="text" name="firstlink"><br>
@@ -83,3 +88,6 @@
 </form>
 
 
+	
+	</body>
+</html>
