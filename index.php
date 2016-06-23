@@ -8,11 +8,9 @@
 	$dom1->loadHTML($html1);
 	$anchorsLink1=[];
 	$j=0;
-	echo "primo link"."<br>";
 	foreach ($dom1->getElementsByTagName('a') as $node) {
 		if ($node->hasAttribute( 'href' ) ){
 			$anchorsLink1[] = $node->getAttribute( 'href' ); 
-			echo $anchorsLink1[$j] ."<br>" ;
 			$j++;
 		}
 	}
@@ -22,21 +20,43 @@
 	$dom2->loadHTML($html2);
 	$anchorsLink2=[];
 	$i = 0;
-	echo "secondo link"."<br>";
 	foreach ($dom2->getElementsByTagName('a') as $node) {
 		if ($node->hasAttribute( 'href' ) ){
 			$anchorsLink2[] = $node->getAttribute( 'href' ); 
-			echo $anchorsLink2[$i] ."<br>" ;
 			$i++;
 		}
 	}
-	$length1 = strlen ( $firstLink ) ;
-	$length2 = strlen ( $secondLink ) ;
+
+	$length1 = count($anchorsLink1) ;
+	$length2 = count($anchorsLink2) ;
+	
+	$mergedAnchors=[];
+	for ($i=0; $i <$length1 ; $i++) { 
+		$maxSimilarity=-1;
+		$index=-1;
+		for ($j=0; $j <$length2 ; $j++) { 
+			similar_text($anchorsLink1[$i], $anchorsLink2[$j],$percent);
+			if($percent>=$maxSimilarity){
+				$maxSimilarity = $percent;
+				$index = $j;		
+			}
+		}
+				$mergedAnchors[] = [$anchorsLink1[$i] , $anchorsLink2[$index], number_format($maxSimilarity, 2, '.', '')];
+	}
+		//stampa array
+	foreach ($mergedAnchors as $anchor) {
+    		foreach ($anchor as $piece) {
+    			echo $piece." , ";
+    		}
+    		echo "<br>";
+	} 
+	
+
 	echo "Somiglianza <br>"; 
 	
    	if ( $length1 > $length2 ) {
-   		similar_text($length1, $length2,$perc); 
-   		echo  $perc . "%";
+   		similar_text($length1, $length2,$percent); 
+   		echo  $percent . "%";
    	}
    	else {
    		similar_text($length2, $length1,$percent);
