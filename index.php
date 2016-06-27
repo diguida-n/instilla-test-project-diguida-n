@@ -1,4 +1,7 @@
 <?php
+ require 'helpers.php';
+
+
 error_reporting(E_ALL ^ E_WARNING);
  function findAndCompare($firstLink, $secondLink)
 {
@@ -7,11 +10,13 @@ error_reporting(E_ALL ^ E_WARNING);
 	$anchorsLink1 =[];
 	putHrefInArray($anchorsLink1, $html1);
 
+	
 	// acquisizione html secondo link
 	$html2 = file_get_contents($secondLink);
 	$anchorsLink2 =[];
 	putHrefInArray($anchorsLink2, $html2);
 
+	
 	//acquisizione html prima anchor del link 1
 	$firstAnchorFirstSite = file_get_contents($anchorsLink1[0]);
 	putHrefInArray($anchorsLink1, $firstAnchorFirstSite);
@@ -19,10 +24,29 @@ error_reporting(E_ALL ^ E_WARNING);
 	//acquisizione html prima anchor del link 2
 	$firstAnchorSecondSite = file_get_contents($anchorsLink2[0]);
 	putHrefInArray($anchorsLink2, $firstAnchorSecondSite);
+	//acquisizione title from link 1
+	$titlesFirstLink = [];
+	foreach ($anchorsLink1 as $anchor ) {
+		$titlesFirstLink [$anchor] = getTitle($anchor);
+	}
+	//acquisizione title from link 2
+
+	$titlesSecondLink = [];
+		foreach ($anchorsLink2 as $anchor ) {
+		$titlesSecondLink [$anchor] = getTitle($anchor);
+	}
+
+
+
 	//unione degli array per somiglianza dell'href
 	$length1 = count($anchorsLink1) ;
 	$length2 = count($anchorsLink2) ;
 	
+
+
+	for ($i=0; $i <length1 ; $i++) { 
+		
+	}
 	$mergedAnchors=[];
 	for ($i=0; $i <$length1 ; $i++) { 
 		$maxSimilarity=-1;
@@ -51,16 +75,8 @@ error_reporting(E_ALL ^ E_WARNING);
 	foreach ($mergedAnchors as $row) {
 		fputcsv($output, $row);
 	}
+	
 }
-
-function putHrefInArray(&$array, $html){
-	$dom = new DOMDocument;
-	$dom->loadHTML($html);
-	foreach ($dom->getElementsByTagName('a') as $node) {
-		if ($node->hasAttribute( 'href' ) ){
-			$array[] = $node->getAttribute( 'href' ); 
-		}
-	}
 
 	
 
